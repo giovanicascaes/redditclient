@@ -6,7 +6,7 @@ import Login from '../screens/Login'
 import Auth from '../screens/Auth'
 import Feed from '../screens/Feed'
 import Random from '../screens/Random'
-import {colors} from '../config/styles'
+import {colors} from './styleDefinition'
 import {getIconVariantForState} from '../lib/uiHelpers'
 
 export const TabStack = createBottomTabNavigator(

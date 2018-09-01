@@ -26,7 +26,6 @@ export default (state = authInitialState, {type, payload = {}}) => {
         case actionTypes.AUTH_RESET:
             return {
                 ...state,
-                token: null, // TODO remover linha
                 authenticating: false
             }
         default:

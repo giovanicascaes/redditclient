@@ -4,7 +4,7 @@ import {MID_AUTH_URL, REDIRECT_URI_REGEX} from '../config/apiConstants'
 export const checkAuth = (prevBootstrappedProp, bootstrapped) => (dispatch, getState) => {
     if (bootstrapped && prevBootstrappedProp !== bootstrapped) {
         const {timeout, time} = getState().auth;
-        if (time && Date.now() - time > timeout * 1000) {
+        if (time && Date.now() - time > timeout * 1) {
             dispatch(authReset())
         }
     }
@@ -22,8 +22,7 @@ export const tryAuth = (url, previousUrl) => (dispatch) => {
             const [, newToken, timeout] = match
             dispatch(authSuccess(newToken, timeout))
         } else {
-            dispatch(authFailure('An error has occurred when authenticating on Reddit. Try again later.'))
-            setTimeout(() => dispatch(dismissErrorMessage()), 10000)
+            dispatch(authFailure())
         }
         previousUrlHolder = null
     } else {
@@ -40,10 +39,14 @@ export const authSuccess = (token, timeout) => ({
     }
 })
 
-export const authFailure = (message) => ({
-    type: actionTypes.AUTH_FAILURE,
-    payload: message
-})
+export const authFailure = message => dispatch => {
+    setTimeout(() => dispatch(dismissErrorMessage()), 10000)
+    const finalMessage = `An error has occurred when authenticating on Reddit${message ? `: \"${message}\"` : '. Try again later.'}`
+    dispatch({
+        type: actionTypes.AUTH_FAILURE,
+        payload: finalMessage
+    })
+}
 
 export const authReset = () => ({
     type: actionTypes.AUTH_RESET

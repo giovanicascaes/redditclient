@@ -22,8 +22,10 @@ export default class extends React.Component {
     }
 
     componentDidUpdate() {
-        const {previousUrl, token, navigation} = this.props
-        if (!previousUrl) {
+        const {error, previousUrl, token, navigation} = this.props
+        if (error) {
+            navigation.popToTop()
+        } else if (!previousUrl) {
             if (token) {
                 navigation.navigate('App')
             } else {
@@ -37,9 +39,13 @@ export default class extends React.Component {
     }
 
     render() {
+        if (this.props.error) {
+            return null
+        }
         return (
             <WebView source={{uri: AUTH_URL}}
                      onNavigationStateChange={this.onNavigationStateChange.bind(this)}
+                     onError={this.props.onError}
                      style={styles.container}/>
         )
     }

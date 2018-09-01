@@ -1,18 +1,17 @@
-import {connect} from 'react-redux';
+import React from 'react'
+import {connect} from 'react-redux'
 
-import Auth from './Auth';
-import {login} from '../../actions/actionCreators';
-import {REDIRECT_URI_REGEX} from '../../config/constants';
+import Auth from './Auth'
+import {authReset, tryAuth} from '../../actions/actionCreators'
 
-const mapDispatachToProps = (dispatch, ownProps) => ({
-    onNavigationStateChange: navigationState => {
-        const token = navigationState.url.match(REDIRECT_URI_REGEX);
+const mapStateToProps = ({auth, url}) => ({
+    token: auth.token,
+    previousUrl: url
+})
 
-        if (token != null) {
-            dispatch(login(token));
-            ownProps.navigation.navigate('App');
-        }
-    }
-});
+const mapDispatchToProps = dispatch => ({
+    onNavigationStateChange: (url, previousUrl) => dispatch(tryAuth(url, previousUrl)),
+    resetAuth: () => dispatch(authReset())
+})
 
-export default connect(null, mapDispatachToProps)(Auth);
+export default connect(mapStateToProps, mapDispatchToProps)(Auth)

@@ -1,9 +1,16 @@
-import {connect} from 'react-redux';
+import React from 'react'
+import {connect} from 'react-redux'
 
-import Bootstrapper from './Bootstrapper';
+import {authReset, checkAuth} from '../../actions/actionCreators';
+import Bootstrapper from './Bootstrapper'
 
 const mapStateToPros = state => ({
-    authToken: state.authToken
-});
+    token: state.auth.token
+})
 
-export default connect(mapStateToPros)(Bootstrapper);
+const mapDispatchToProps = dispatch => ({
+    checkAuth: (prevBootstrappedProp, bootstrapped) => dispatch(checkAuth(prevBootstrappedProp, bootstrapped)),
+    resetAuth: () => dispatch(authReset())
+})
+
+export default connect(mapStateToPros, mapDispatchToProps)(Bootstrapper)

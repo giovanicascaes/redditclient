@@ -1,14 +1,15 @@
-import React from 'react';
-import {createBottomTabNavigator, createStackNavigator, createSwitchNavigator} from 'react-navigation';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React from 'react'
+import {createBottomTabNavigator, createStackNavigator, createSwitchNavigator} from 'react-navigation'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
-import Auth from '../screens/Auth';
-import Feed from '../screens/Feed';
-import Random from '../screens/Random';
-import {colors} from '../config/styles';
-import {getIconVariantForState} from '../lib/uiHelpers';
+import Login from '../screens/Login'
+import Auth from '../screens/Auth'
+import Feed from '../screens/Feed'
+import Random from '../screens/Random'
+import {colors} from '../config/styles'
+import {getIconVariantForState} from '../lib/uiHelpers'
 
-export const AppStack = createBottomTabNavigator(
+export const TabStack = createBottomTabNavigator(
     {
         Feed,
         Random
@@ -16,26 +17,49 @@ export const AppStack = createBottomTabNavigator(
     {
         navigationOptions: ({navigation}) => ({
             tabBarIcon: ({focused, tintColor}) => {
-                const icon = navigation.state.routeName === 'Feed' ? 'albums' : 'shuffle';
+                const icon = navigation.state.routeName === 'Feed' ? 'albums' : 'shuffle'
 
                 return <Ionicons name={getIconVariantForState(icon, focused)}
                                  color={tintColor}
-                                 size={25}/>;
+                                 size={36}/>
             }
         }),
         tabBarOptions: {
             activeTintColor: colors.tint,
             inactiveTintColor: colors.inactive,
-        },
-
+            labelStyle: {
+                fontSize: 12,
+                fontWeight: 'bold'
+            }
+        }
     }
-);
+)
 
-const AuthStack = createStackNavigator({Auth});
+const LoginStack = createStackNavigator(
+    {
+        Login,
+        Auth
+    },
+    {
+        headerMode: 'screen'
+    }
+)
+
+export const AppStack = createStackNavigator(
+    {
+        Tabs: TabStack
+    },
+    {
+        navigationOptions: {
+            headerTitle: <Ionicons name={'logo-reddit'}
+                                   size={28}/>
+        }
+    }
+)
 
 export default createSwitchNavigator(
     {
-        Auth: AuthStack,
+        Login: LoginStack,
         App: AppStack
     }
-);
+)

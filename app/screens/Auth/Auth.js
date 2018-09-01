@@ -1,15 +1,47 @@
-import React from "react";
-import {StyleSheet, WebView} from "react-native";
+import React from 'react'
+import {StyleSheet, WebView} from 'react-native'
+import {HeaderBackButton} from 'react-navigation'
 
-import {LOGIN_URL} from '../../config/constants'
+import {AUTH_URL} from '../../config/apiConstants'
 
-export default class {
-    static navigationOptions = {
-        headerTitle: 'Authorize this application'
-    };
+export default class extends React.Component {
+    static navigationOptions = ({navigation}) => ({
+        headerTitle: 'Authorize this app',
+        headerLeft: <HeaderBackButton onPress={() => {
+            navigation.getParam('resetAuth')()
+            navigation.goBack()
+        }
+        }/>
+    })
+
+    componentDidMount() {
+        const {navigation, resetAuth} = this.props
+        navigation.setParams({
+            resetAuth
+        })
+    }
+
+    componentDidUpdate() {
+        const {previousUrl, token, navigation} = this.props
+        if (!previousUrl) {
+            if (token) {
+                navigation.navigate('App')
+            } else {
+                navigation.popToTop()
+            }
+        }
+    }
+
+    onNavigationStateChange = function (navigationState) {
+        this.props.onNavigationStateChange(navigationState.url, this.props.previousUrl)
+    }
 
     render() {
-        return <WebView source={{uri: LOGIN_URL}} onNavigationStateChange={this.props.onNavigationStateChange} style={styles.container}/>;
+        return (
+            <WebView source={{uri: AUTH_URL}}
+                     onNavigationStateChange={this.onNavigationStateChange.bind(this)}
+                     style={styles.container}/>
+        )
     }
 }
 
@@ -19,4 +51,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     }
-});
+})

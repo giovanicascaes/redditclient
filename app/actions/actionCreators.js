@@ -4,7 +4,7 @@ import {MID_AUTH_URL, REDIRECT_URI_REGEX} from '../config/apiConstants'
 export const checkAuth = (prevBootstrappedProp, bootstrapped) => (dispatch, getState) => {
     if (bootstrapped && prevBootstrappedProp !== bootstrapped) {
         const {timeout, time} = getState().auth;
-        if (time && Date.now() - time > timeout * 1) {
+        if (time && Date.now() - time > timeout * 1000) {
             dispatch(authReset())
         }
     }

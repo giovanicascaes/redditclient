@@ -22,15 +22,11 @@ export default class extends React.Component {
     }
 
     componentDidUpdate() {
-        const {error, previousUrl, token, navigation} = this.props
+        const {error, token, navigation} = this.props
         if (error) {
             navigation.popToTop()
-        } else if (!previousUrl) {
-            if (token) {
-                navigation.navigate('App')
-            } else {
-                navigation.popToTop()
-            }
+        } else if (token) {
+            navigation.navigate('App')
         }
     }
 

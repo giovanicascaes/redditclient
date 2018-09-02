@@ -24,10 +24,7 @@ export default (state = authInitialState, {type, payload = {}}) => {
             }
         case actionTypes.AUTH_FAILURE:
         case actionTypes.AUTH_RESET:
-            return {
-                ...state,
-                authenticating: false
-            }
+            return authInitialState
         default:
             return state
     }

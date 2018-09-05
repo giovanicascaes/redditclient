@@ -6,6 +6,13 @@ export default class extends React.Component {
         header: null
     }
 
+    componentDidMount() {
+        const {authenticating, resetAuth} = this.props
+        if (authenticating) {
+            resetAuth()
+        }
+    }
+
     componentDidUpdate() {
         const {authenticating, navigation} = this.props
         if (authenticating) {
@@ -29,7 +36,7 @@ export default class extends React.Component {
         return (
             <View style={styles.container}>
                 <View style={styles.authButtonWrapper}>
-                    <Button onPress={() => this.props.navigation.navigate('Auth')}
+                    <Button onPress={this.props.initAuth}
                             title={'Authorize this app'}/>
                 </View>
                 {this.renderErrorMessage()}

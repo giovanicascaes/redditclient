@@ -2,7 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 
 import Login from './Login'
-import {initAuth} from '../../actions/actionCreators'
+import {authInit, authReset} from '../../actions/actionCreators'
 
 const mapStateToPros = ({auth, error}) => ({
     authenticating: auth.authenticating,
@@ -10,7 +10,8 @@ const mapStateToPros = ({auth, error}) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    initAuth: () => dispatch(initAuth())
+    initAuth: () => dispatch(authInit()),
+    resetAuth: () => dispatch(authReset())
 })
 
 export default connect(mapStateToPros, mapDispatchToProps)(Login)

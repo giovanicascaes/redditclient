@@ -3,10 +3,6 @@ import RootStack, {AppStack} from '../../config/routes'
 import AuthLoading from '../../screens/AuthLoading'
 
 export default class extends React.Component {
-    componentDidMount() {
-        this.props.resetAuth()
-    }
-
     componentDidUpdate(prevProps) {
         const {bootstrapped, checkAuth} = this.props
         checkAuth(prevProps.bootstrapped, bootstrapped)

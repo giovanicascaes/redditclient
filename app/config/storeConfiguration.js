@@ -1,5 +1,5 @@
 import {applyMiddleware, createStore} from 'redux'
-import {persistReducer, persistStore} from 'redux-persist'
+import {createMigrate, persistReducer, persistStore} from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import thunk from 'redux-thunk'
@@ -7,8 +7,17 @@ import {composeWithDevTools} from 'redux-devtools-extension'
 
 import rootReducer from '../reducers'
 
+const migrations = {
+    1: state => ({
+        ...state,
+        error: null
+    })
+}
+
 const persistConfig = {
     key: 'root',
+    version: 1,
+    migrate: createMigrate(migrations),
     storage,
     stateReconciler: autoMergeLevel2
 }

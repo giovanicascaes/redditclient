@@ -3,20 +3,23 @@ import {MID_AUTH_URL, REDIRECT_URI_REGEX} from '../config/apiConstants'
 
 export const checkAuth = (prevBootstrappedProp, bootstrapped) => (dispatch, getState) => {
     if (bootstrapped && prevBootstrappedProp !== bootstrapped) {
-        const {timeout, time} = getState().auth;
+        const {timeout, time} = getState().auth
         if (time && Date.now() - time > timeout * 1000) {
             dispatch(authReset())
         }
     }
 }
 
-export const initAuth = () => ({
+export const authInit = () => ({
     type: actionTypes.AUTH_INIT
 })
 
 export const tryAuth = (url, previousUrl) => (dispatch) => {
-    let previousUrlHolder = previousUrl
-    if (previousUrlHolder && previousUrlHolder === MID_AUTH_URL) {
+    if (url === previousUrl) {
+        return
+    }
+    let newUrl = url
+    if (previousUrl && previousUrl === MID_AUTH_URL) {
         const match = url.match(REDIRECT_URI_REGEX)
         if (match) {
             const [, newToken, timeout] = match
@@ -24,11 +27,9 @@ export const tryAuth = (url, previousUrl) => (dispatch) => {
         } else {
             dispatch(authFailure())
         }
-        previousUrlHolder = null
-    } else {
-        previousUrlHolder = url
+        newUrl = null
     }
-    dispatch(saveUrl(previousUrlHolder))
+    dispatch(saveUrl(newUrl))
 }
 
 export const authSuccess = (token, timeout) => ({

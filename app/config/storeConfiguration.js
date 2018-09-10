@@ -8,15 +8,26 @@ import {composeWithDevTools} from 'redux-devtools-extension'
 import rootReducer from '../reducers'
 
 const migrations = {
-    1: state => ({
-        ...state,
-        error: null
+    3: state => ({
+        auth: {
+            token: null,
+            timeout: null,
+            time: null,
+            authenticating: false,
+            url: null,
+            error: null
+        },
+        posts: {
+            subreddits: [],
+            fetching: false,
+            error: null
+        }
     })
 }
 
 const persistConfig = {
     key: 'root',
-    version: 1,
+    version: 3,
     migrate: createMigrate(migrations),
     storage,
     stateReconciler: autoMergeLevel2

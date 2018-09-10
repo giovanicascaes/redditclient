@@ -2,16 +2,16 @@ import React from 'react'
 import {connect} from 'react-redux'
 
 import Login from './Login'
-import {authInit, authReset} from '../../actions/actionCreators'
+import {authInit, resetAuth} from '../../actions/actionCreators'
 
-const mapStateToPros = ({auth, error}) => ({
-    authenticating: auth.authenticating,
+const mapStateToPros = ({auth: {authenticating, error}}) => ({
+    authenticating,
     error
 })
 
 const mapDispatchToProps = dispatch => ({
     initAuth: () => dispatch(authInit()),
-    resetAuth: () => dispatch(authReset())
+    resetAuth: () => dispatch(resetAuth())
 })
 
 export default connect(mapStateToPros, mapDispatchToProps)(Login)

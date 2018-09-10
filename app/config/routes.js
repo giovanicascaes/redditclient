@@ -7,7 +7,7 @@ import Auth from '../screens/Auth'
 import Feed from '../screens/Feed'
 import Random from '../screens/Random'
 import {colors} from './styleDefinition'
-import {getIconVariantForState} from '../lib/uiHelpers'
+import {getIconVariant} from '../lib/uiHelpers'
 
 export const TabStack = createBottomTabNavigator(
     {
@@ -18,8 +18,7 @@ export const TabStack = createBottomTabNavigator(
         navigationOptions: ({navigation}) => ({
             tabBarIcon: ({focused, tintColor}) => {
                 const icon = navigation.state.routeName === 'Feed' ? 'albums' : 'shuffle'
-
-                return <Ionicons name={getIconVariantForState(icon, focused)}
+                return <Ionicons name={getIconVariant(icon, focused)}
                                  color={tintColor}
                                  size={36}/>
             }

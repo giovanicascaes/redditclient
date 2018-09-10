@@ -7,9 +7,10 @@ import getStoreConfiguration from './config/storeConfiguration'
 
 const {store, persistor} = getStoreConfiguration()
 
-export default () =>
+export default () => (
     <Provider store={store}>
         <PersistGate persistor={persistor}>
             {bootstrapped => <Bootstrapper bootstrapped={bootstrapped}/>}
         </PersistGate>
     </Provider>
+)

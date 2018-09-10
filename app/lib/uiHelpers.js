@@ -1,6 +1,6 @@
 import {Platform} from 'react-native'
 
-export const getIconVariantForState = (icon, focused) => {
+export const getIconVariant = (icon, focused) => {
     if (Platform.OS === 'android') {
         return `md-${icon}`
     }

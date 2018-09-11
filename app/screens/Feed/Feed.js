@@ -20,12 +20,16 @@ class Feed extends React.Component {
         return (
             <View style={styles.container}>
                 <FlatList
-                    data={[{imgSrc: null}]}
-                    renderItem={post => (
-                        <Post image={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}}
-                              title={'Título qualquer'}
-                              subreddit={'Subreddit qualquer'}/>
-                    )
+                    data={this.props.posts}
+                    keyExtractor={post => post.index.toString()}
+                    renderItem={({item}) => {
+                        const {thumb, title, subreddit} = item
+                        return (
+                            <Post image={thumb}
+                                  title={title}
+                                  subreddit={subreddit}/>
+                        )
+                    }
                     }
                 />
             </View>

@@ -1,5 +1,5 @@
 import {actionTypes} from './actionTypes'
-import {MID_AUTH_URL, REDIRECT_URI_REGEX} from '../config/apiConstants'
+import {MID_AUTH_URL, NO_THUMB, REDIRECT_URI_REGEX} from '../config/apiConstants'
 import fetchJson from '../api/redditConnection'
 import {fetchToDataUrl} from '../lib/fetchHelpers'
 
@@ -78,22 +78,24 @@ export const fetchPosts = subreddit => (dispatch, getState) => {
 
 function extractPosts(subreddit, response) {
     if (subreddit === 'hot') {
-        const defaultPostMapping = post => ({
-            title: post.data.title,
-            thumb: 'no_thumb'
-        })
         return Promise.all(response.data.children.map(child => {
-            const noThumb = ['default', 'self', 'nsfw', 'image'].includes(child.data.thumbnail)
+            const {title, subreddit, thumbnail} = child.data
+            const post = {
+                title,
+                subreddit,
+                thumb: NO_THUMB
+            }
+            const noThumb = ['default', 'self', 'nsfw', 'image'].includes(thumbnail)
             if (noThumb) {
-                return new Promise(function (resolve) {
-                    resolve(defaultPostMapping(child))
+                return new Promise(function(resolve) {
+                    resolve(post)
                 })
             }
-            return fetchToDataUrl(child.data.thumbnail).then(thumbDataUrl => ({
-                ...defaultPostMapping(child),
+            return fetchToDataUrl(thumbnail).then(thumbDataUrl => ({
+                ...post,
                 thumb: thumbDataUrl
-            })).catch(() => defaultPostMapping(child))
-        })).catch(e => console.error(e))
+            })).catch(() => post)
+        }))
     }
     return []
 }

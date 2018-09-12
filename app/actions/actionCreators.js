@@ -73,7 +73,7 @@ export const fetchPosts = subreddit => (dispatch, getState) => {
                 extractPosts(subreddit, response).then(posts => dispatch(fetchPostsSuccess(subreddit, posts)))
             }
         })
-        .catch(error => fetchPostsFailure(subreddit, error))
+        .catch(error => dispatch(fetchPostsFailure(subreddit, error)))
 }
 
 function extractPosts(subreddit, response) {
@@ -112,7 +112,14 @@ export const fetchPostsSuccess = (subreddit, posts) => ({
     }
 })
 
-export const fetchPostsFailure = (subreddit, message) => ({
-    type: actionTypes.FETCH_POSTS_FAILURE,
-    payload: `An error has occurred while fetching posts from /r/${subreddit}${message ? `: \"${message}\"` : '. Try again later.'}`
+export const fetchPostsFailure = (subreddit, message) => dispatch => {
+    setTimeout(() => dispatch(dismissPostsErrorMessage()), 10000)
+    dispatch({
+        type: actionTypes.FETCH_POSTS_FAILURE,
+        payload: `An error has occurred while fetching posts from /r/${subreddit}${message ? `: \"${message}\"` : '. Try again later.'}`
+    })
+}
+
+export const dismissPostsErrorMessage = () => ({
+    type: actionTypes.RESET_POSTS_ERROR
 })

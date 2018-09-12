@@ -11,7 +11,8 @@ const mapStateToProps = ({posts}) => ({
         index,
         ...post,
         thumb: post.thumb === NO_THUMB ? require('../../resources/img/img-placeholder.png') : {uri: post.thumb}
-    }))
+    })),
+    error: posts.error
 })
 
 const mapDispatchToProps = dispatch => ({

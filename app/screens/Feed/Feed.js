@@ -1,8 +1,11 @@
 import React from 'react'
-import {FlatList, StyleSheet, View} from 'react-native'
+import {FlatList, StyleSheet, Text, View} from 'react-native'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
-import Post from '../../components/Post';
+import Post from '../../components/Post'
 import {withProps} from '../../lib/reactHelpers'
+import {getIconVariant} from '../../lib/uiHelpers'
+import {colors} from '../../config/styleDefinition'
 
 @withProps({
     subreddit: 'hot'
@@ -16,7 +19,22 @@ class Feed extends React.Component {
         fetchPosts(subreddit)
     }
 
-    render() {
+    renderPostList() {
+        const {error} = this.props
+        if (this.props.error) {
+            return (
+                <View style={styles.errorContainer}>
+                    <View style={styles.errorImageWrapper}>
+                        <Ionicons name={getIconVariant('warning')}
+                                  size={124}
+                                  color={colors.placeHolder}/>
+                    </View>
+                    <View style={styles.errorWrapper}>
+                        <Text style={styles.errorMessage}>{error}</Text>
+                    </View>
+                </View>
+            )
+        }
         return (
             <View style={styles.container}>
                 <FlatList
@@ -35,11 +53,31 @@ class Feed extends React.Component {
             </View>
         )
     }
+
+    render() {
+        return this.renderPostList()
+    }
 }
 
 const styles = StyleSheet.create({
-    container: {
+    postsContainer: {
         flex: 1
+    },
+    errorContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    errorWrapper: {
+        marginTop: 150
+    },
+    errorImageWrapper: {
+        position: 'absolute'
+    },
+    errorMessage: {
+        color: 'red',
+        fontWeight: 'bold',
+        paddingHorizontal: 10
     }
 })
 

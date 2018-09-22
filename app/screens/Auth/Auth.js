@@ -30,9 +30,8 @@ export default class extends React.Component {
         }
     }
 
-    onNavigationStateChange = function (navigationState) {
-        this.props.onNavigationStateChange(navigationState.url, this.props.previousUrl)
-    }
+    onNavigationStateChange = navigationState => this.props.onNavigationStateChange(
+        navigationState.url, this.props.previousUrl)
 
     render() {
         if (this.props.error) {

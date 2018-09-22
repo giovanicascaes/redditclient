@@ -3,7 +3,7 @@ import {actionTypes} from '../actions/actionTypes'
 const initialState = {
     fetching: false,
     error: null,
-    subreddits: []
+    subreddits: {}
 }
 
 export default (state = initialState, action) => {
@@ -21,7 +21,10 @@ export default (state = initialState, action) => {
                 ...state,
                 subreddits: {
                     ...state.subreddits,
-                    [subreddit]: posts
+                    [subreddit]: [
+                        ...state.subreddits[subreddit],
+                        ...posts
+                    ]
                 },
                 fetching: false
             }
@@ -31,10 +34,18 @@ export default (state = initialState, action) => {
                 fetching: false,
                 error: payload
             }
-        case actionTypes.RESET_POSTS_ERROR:
+        case actionTypes.CLEAR_POSTS_ERROR:
             return {
                 ...state,
                 error: null
+            }
+        case actionTypes.CLEAR_POSTS:
+            return {
+                ...state,
+                subreddits: {
+                    ...state.subreddits,
+                    [payload]: []
+                }
             }
         default:
             return state

@@ -1,17 +1,19 @@
 import React from 'react'
 import RootStack, {AppStack} from '../../config/routes'
-import AuthLoading from '../../screens/AuthLoading'
+import AuthLoading from '../../screens/Loading'
 
 export default class extends React.Component {
-    componentDidUpdate(prevProps) {
-        const {bootstrapped, checkAuth} = this.props
-        checkAuth(prevProps.bootstrapped, bootstrapped)
+    componentDidUpdate() {
+        const {bootstrapped, token, tokenValidated, checkAuth} = this.props
+        if (bootstrapped && token && !tokenValidated) {
+            checkAuth()
+        }
     }
 
     render() {
-        const {bootstrapped, token} = this.props
+        const {bootstrapped, tokenValidated} = this.props
         if (bootstrapped) {
-            if (token) {
+            if (tokenValidated) {
                 return <AppStack/>
             }
             return <RootStack/>

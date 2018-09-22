@@ -4,6 +4,7 @@ const initialState = {
     token: null,
     timeout: null,
     time: null,
+    tokenValidated: false,
     authenticating: false,
     url: null,
     error: null
@@ -12,6 +13,11 @@ const initialState = {
 export default (state = initialState, action) => {
     const {type, payload = {}} = action
     switch (type) {
+        case actionTypes.VALIDATE_TOKEN:
+            return {
+                ...state,
+                tokenValidated: true
+            }
         case actionTypes.AUTH_INIT:
             return {
                 ...state,
@@ -32,14 +38,14 @@ export default (state = initialState, action) => {
                 timeout,
                 time: Date.now(),
                 authenticating: false,
-                url: null
+                tokenValidated: true
             }
         case actionTypes.AUTH_FAILURE:
             return {
                 ...initialState,
                 error: payload
             }
-        case actionTypes.RESET_AUTH_ERROR:
+        case actionTypes.CLEAR_AUTH_ERROR:
             return {
                 ...state,
                 error: null

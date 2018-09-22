@@ -1,16 +1,24 @@
 import React from 'react'
-import {FlatList, StyleSheet, Text, View} from 'react-native'
+import {ActivityIndicator, FlatList, StyleSheet, Text, View} from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import Post from '../../components/Post'
-import {withProps} from '../../lib/reactHelpers'
+import Loading from '../Loading'
 import {getIconVariant} from '../../lib/uiHelpers'
 import {colors} from '../../config/styleDefinition'
 
-@withProps({
-    subreddit: 'hot'
-})
-class Feed extends React.Component {
+export default class extends React.Component {
+    navigationOptions = ({navigation}) => ({
+        tabBarLabel: navigation.getParam('tabBarLabel')
+    })
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            refreshing: false
+        }
+    }
+
     componentDidMount() {
         const {navigation, subreddit, fetchPosts} = this.props
         navigation.setParams({
@@ -19,9 +27,42 @@ class Feed extends React.Component {
         fetchPosts(subreddit)
     }
 
-    renderPostList() {
-        const {error} = this.props
-        if (this.props.error) {
+    componentDidUpdate(prevProps) {
+        if (prevProps.fetching
+            && !this.props.fetching
+            && this.state.refreshing) {
+            this.setState({
+                refreshing: false
+            })
+        }
+    }
+
+    onRefresh = () => {
+        const {refreshPosts, subreddit} = this.props
+        this.setState({
+            refreshing: true
+        }, () => refreshPosts(subreddit))
+    }
+
+    onEndReached = () => {
+        const {fetching, fetchMorePosts, subreddit} = this.props
+        if (!fetching) {
+            fetchMorePosts(subreddit)
+        }
+    }
+
+    renderFooter = () => {
+        return (<ActivityIndicator style={styles.footer}/>)
+    }
+
+    render() {
+        const {fetching, error, posts} = this.props
+        if (posts.length === 0 && fetching) {
+            return (
+                <Loading/>
+            )
+        }
+        if (error) {
             return (
                 <View style={styles.errorContainer}>
                     <View style={styles.errorImageWrapper}>
@@ -38,7 +79,7 @@ class Feed extends React.Component {
         return (
             <View style={styles.container}>
                 <FlatList
-                    data={this.props.posts}
+                    data={posts}
                     keyExtractor={post => post.index.toString()}
                     renderItem={({item}) => {
                         const {thumb, title, subreddit} = item
@@ -47,15 +88,15 @@ class Feed extends React.Component {
                                   title={title}
                                   subreddit={subreddit}/>
                         )
-                    }
-                    }
+                    }}
+                    onRefresh={this.onRefresh}
+                    refreshing={this.state.refreshing}
+                    onEndReached={this.onEndReached}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={this.renderFooter}
                 />
             </View>
         )
-    }
-
-    render() {
-        return this.renderPostList()
     }
 }
 
@@ -78,11 +119,8 @@ const styles = StyleSheet.create({
         color: 'red',
         fontWeight: 'bold',
         paddingHorizontal: 10
+    },
+    footer: {
+        marginVertical: 20
     }
 })
-
-Feed.navigationOptions = ({navigation}) => ({
-    tabBarLabel: navigation.getParam('tabBarLabel')
-})
-
-export default Feed

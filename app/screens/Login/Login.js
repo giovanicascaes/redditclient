@@ -20,7 +20,7 @@ export default class extends React.Component {
         }
     }
 
-    renderErrorMessage() {
+    renderErrorMessage = () => {
         const {error} = this.props
         if (error) {
             return (

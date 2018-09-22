@@ -1,42 +1,60 @@
-import {applyMiddleware, createStore} from 'redux'
+import {applyMiddleware, combineReducers, createStore} from 'redux'
 import {createMigrate, persistReducer, persistStore} from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import thunk from 'redux-thunk'
 import {composeWithDevTools} from 'redux-devtools-extension'
 
-import rootReducer from '../reducers'
+import auth from '../reducers/auth'
+import posts from '../reducers/posts'
 
 const migrations = {
-    3: state => ({
+    12: state => ({
         auth: {
             token: null,
             timeout: null,
             time: null,
             authenticating: false,
+            checkingAuth: false,
             url: null,
             error: null
         },
         posts: {
-            subreddits: [],
+            subreddits: {
+                hot: []
+            },
             fetching: false,
             error: null
         }
     })
 }
 
-const persistConfig = {
-    key: 'root',
-    version: 3,
-    migrate: createMigrate(migrations),
+const authPersistConfig = {
+    key: 'auth',
     storage,
-    stateReconciler: autoMergeLevel2
+    blacklist: ['tokenValidated', 'authenticating']
 }
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
+const rootPersistConfig = {
+    key: 'root',
+    version: 14,
+    migrate: createMigrate(migrations),
+    storage,
+    stateReconciler: autoMergeLevel2,
+    blacklist: ['auth']
+}
+
+const authPersistedReducer = persistReducer(authPersistConfig, auth)
+
+const rootReducer = combineReducers({
+    auth: authPersistedReducer,
+    posts
+})
+
+const rootPersistedReducer = persistReducer(rootPersistConfig, rootReducer)
 
 export default () => {
-    const store = createStore(persistedReducer, composeWithDevTools(applyMiddleware(thunk)))
+    const store = createStore(rootPersistedReducer, composeWithDevTools(applyMiddleware(thunk)))
     const persistor = persistStore(store)
     return {store, persistor}
 }

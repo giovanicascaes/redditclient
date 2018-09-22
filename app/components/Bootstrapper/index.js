@@ -1,15 +1,16 @@
 import React from 'react'
 import {connect} from 'react-redux'
 
-import {checkAuth} from '../../actions/actionCreators';
+import {checkAuth, validateToken, checkAuthInit} from '../../actions/actionCreators';
 import Bootstrapper from './Bootstrapper'
 
-const mapStateToPros = state => ({
-    token: state.auth.token
+const mapStateToPros = ({auth: {token, tokenValidated}}) => ({
+    token,
+    tokenValidated
 })
 
 const mapDispatchToProps = dispatch => ({
-    checkAuth: (prevBootstrappedProp, bootstrapped) => dispatch(checkAuth(prevBootstrappedProp, bootstrapped)),
+    checkAuth: () => dispatch(checkAuth())
 })
 
 export default connect(mapStateToPros, mapDispatchToProps)(Bootstrapper)

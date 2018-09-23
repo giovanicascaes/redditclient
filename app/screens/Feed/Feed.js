@@ -57,7 +57,7 @@ export default class extends React.Component {
 
     render() {
         const {fetching, error, posts} = this.props
-        if (posts.length === 0 && fetching) {
+        if (posts.length === 0 && fetching && !this.state.refreshing) {
             return (
                 <Loading/>
             )

@@ -9,13 +9,13 @@ import auth from '../reducers/auth'
 import posts from '../reducers/posts'
 
 const migrations = {
-    12: state => ({
+    15: state => ({
         auth: {
             token: null,
             timeout: null,
             time: null,
             authenticating: false,
-            checkingAuth: false,
+            tokenValidated: false,
             url: null,
             error: null
         },
@@ -37,7 +37,7 @@ const authPersistConfig = {
 
 const rootPersistConfig = {
     key: 'root',
-    version: 14,
+    version: 15,
     migrate: createMigrate(migrations),
     storage,
     stateReconciler: autoMergeLevel2,

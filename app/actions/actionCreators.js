@@ -66,43 +66,45 @@ export const dismissAuthErrorMessage = () => ({
     type: actionTypes.CLEAR_AUTH_ERROR
 })
 
-export const fetchPosts = (subreddit, fetchCallBack =
-    getState => fetchJson(subreddit, getState().auth.token)
+export const fetchPosts = (
+    subreddit,
+    fetchParams = [],
+    onSuccessActionCreator = posts => fetchPostsSuccess(subreddit, posts)
 ) => (dispatch, getState) => {
     dispatch(fetchPostsInit())
-    fetchCallBack(getState).then(response => {
-        if (response.error) {
-            dispatch(fetchPostsFailure(subreddit, `Error ${response.error}: ${response.message}`))
-        } else {
-            extractPosts(subreddit, response).then(posts => dispatch(fetchPostsSuccess(subreddit, posts)))
-        }
-    }).catch(error => dispatch(fetchPostsFailure(subreddit, error)))
+    fetchJson(subreddit, getState().auth.token, fetchParams)
+        .then(response => {
+            if (response.error) {
+                dispatch(fetchPostsFailure(subreddit, `Error ${response.error}: ${response.message}`))
+            } else {
+                extractPosts(response, subreddit).then(posts => dispatch(onSuccessActionCreator(posts)))
+            }
+        }).catch(error => dispatch(fetchPostsFailure(subreddit, error)))
 }
 
-export const fetchMorePosts = subreddit => dispatch => {
-    dispatch(fetchPosts(subreddit, getState => {
-        const posts = getState().posts.subreddits[subreddit]
-        return fetchJson(subreddit, getState().auth.token, [
+export const fetchMorePosts = subreddit => (dispatch, getState) => {
+    const posts = getState().posts.subreddits[subreddit]
+    dispatch(fetchPosts(
+        subreddit,
+        [
             {
                 name: 'after',
                 value: posts[posts.length - 1].name
             }
-        ])
-    }))
+        ]))
 }
 
 export const refreshPosts = subreddit => dispatch => {
-    dispatch(clearPosts(subreddit))
-    dispatch(fetchPosts(subreddit))
+    dispatch(fetchPosts(
+        subreddit,
+        null,
+        posts => dispatch => {
+            dispatch(clearPosts(subreddit))
+            dispatch(fetchPostsSuccess(subreddit, posts))
+        }))
 }
 
-export const clearPosts = subreddit => ({
-    type: actionTypes.CLEAR_POSTS,
-    payload: subreddit
-})
-
-
-function extractPosts(subreddit, response) {
+function extractPosts(response, subreddit) {
     if (subreddit === 'hot') {
         return Promise.all(response.data.children.map(child => {
             const {title, subreddit, name, thumbnail} = child.data
@@ -126,6 +128,11 @@ function extractPosts(subreddit, response) {
     }
     return []
 }
+
+export const clearPosts = subreddit => ({
+    type: actionTypes.CLEAR_POSTS,
+    payload: subreddit
+})
 
 export const fetchPostsInit = () => ({
     type: actionTypes.FETCH_POSTS_INIT

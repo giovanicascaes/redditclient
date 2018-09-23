@@ -2,7 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 
 import Feed from './Feed'
-import {fetchMorePosts, fetchPosts, refreshPosts} from '../../actions/actionCreators'
+import {fetchPosts, refreshPosts, fetchMorePosts} from '../../actions/actionCreators'
 import {NO_THUMB} from '../../config/apiConstants'
 
 const mapStateToProps = ({posts}, ownProps) => {

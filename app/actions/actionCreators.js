@@ -1,6 +1,12 @@
 import {actionTypes} from './actionTypes'
-import {MID_AUTH_URL, NO_THUMB, REDIRECT_URI_REGEX} from '../config/apiConstants'
-import fetchJson from '../api/redditConnection'
+import {
+    MID_AUTH_URL,
+    NO_THUMB,
+    REDDIT_POST_FETCH_DEFAULT_LIMIT,
+    REDDIT_POST_FETCH_LIMIT_PARAM,
+    REDIRECT_URI_REGEX
+} from '../config/apiConstants'
+import {after, fetchPostsJson, limit} from '../api/redditConnection'
 import {fetchToDataUrl} from '../lib/fetchHelpers'
 
 export const checkAuth = () => (dispatch, getState) => {
@@ -68,11 +74,11 @@ export const dismissAuthErrorMessage = () => ({
 
 export const fetchPosts = (
     subreddit,
-    fetchParams = [],
-    onSuccessActionCreator = posts => fetchPostsSuccess(subreddit, posts)
+    onSuccessActionCreator = posts => fetchPostsSuccess(subreddit, posts),
+    ...options
 ) => (dispatch, getState) => {
     dispatch(fetchPostsInit())
-    fetchJson(subreddit, getState().auth.token, fetchParams)
+    fetchPostsJson(subreddit, getState().auth.token, ...options)
         .then(response => {
             if (response.error) {
                 dispatch(fetchPostsFailure(subreddit, `Error ${response.error}: ${response.message}`))
@@ -82,26 +88,29 @@ export const fetchPosts = (
         }).catch(error => dispatch(fetchPostsFailure(subreddit, error)))
 }
 
-export const fetchMorePosts = subreddit => (dispatch, getState) => {
-    const posts = getState().posts.subreddits[subreddit]
-    dispatch(fetchPosts(
-        subreddit,
-        [
-            {
-                name: 'after',
-                value: posts[posts.length - 1].name
-            }
-        ]))
-}
-
 export const refreshPosts = subreddit => dispatch => {
     dispatch(fetchPosts(
         subreddit,
-        null,
         posts => dispatch => {
             dispatch(clearPosts(subreddit))
             dispatch(fetchPostsSuccess(subreddit, posts))
         }))
+}
+
+export const fetchMorePosts = (subreddit, qtOfPostsRendered) => (dispatch, getState) => {
+    const posts = getState().posts.subreddits[subreddit]
+    const numOfCachedPostsRemaining = posts.length - qtOfPostsRendered
+    if (numOfCachedPostsRemaining >= REDDIT_POST_FETCH_DEFAULT_LIMIT) {
+        return
+    }
+    const options = [after(posts[posts.length - 1].name)]
+    const numOfPostsToFetch = REDDIT_POST_FETCH_DEFAULT_LIMIT - numOfCachedPostsRemaining
+    if (numOfPostsToFetch >= 0) {
+        options.push(limit(numOfPostsToFetch))
+    }
+    dispatch(fetchPosts(subreddit, posts => dispatch => {
+        dispatch(fetchPostsSuccess(subreddit, posts, true))
+    }, ...options))
 }
 
 function extractPosts(response, subreddit) {
@@ -138,11 +147,12 @@ export const fetchPostsInit = () => ({
     type: actionTypes.FETCH_POSTS_INIT
 })
 
-export const fetchPostsSuccess = (subreddit, posts) => ({
+export const fetchPostsSuccess = (subreddit, posts, more = false) => ({
     type: actionTypes.FETCH_POSTS_SUCCESS,
     payload: {
         subreddit,
-        posts
+        posts,
+        more
     }
 })
 

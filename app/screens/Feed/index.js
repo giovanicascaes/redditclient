@@ -2,8 +2,8 @@ import React from 'react'
 import {connect} from 'react-redux'
 
 import Feed from './Feed'
-import {fetchPosts, refreshPosts, fetchMorePosts} from '../../actions/actionCreators'
-import {NO_THUMB} from '../../config/apiConstants'
+import {refreshPosts, fetchMorePosts, fetchPosts} from '../../actions/actionCreators'
+import {NO_THUMB, REDDIT_POST_FETCH_DEFAULT_LIMIT} from '../../config/apiConstants'
 
 const mapStateToProps = ({posts}, ownProps) => {
     const {fetching, subreddits, error} = posts
@@ -24,7 +24,7 @@ const mapStateToProps = ({posts}, ownProps) => {
 const mapDispatchToProps = dispatch => ({
     fetchPosts: subreddit => dispatch(fetchPosts(subreddit)),
     refreshPosts: subreddit => dispatch(refreshPosts(subreddit)),
-    fetchMorePosts: subreddit => dispatch(fetchMorePosts(subreddit)),
+    fetchMorePosts: (subreddit, qttOfPostsRendered) => dispatch(fetchMorePosts(subreddit, qttOfPostsRendered)),
 })
 
 const FeedReduxConnected = connect(mapStateToProps, mapDispatchToProps)(Feed)

@@ -45,9 +45,9 @@ export default class extends React.Component {
     }
 
     onEndReached = () => {
-        const {fetching, fetchMorePosts, subreddit} = this.props
+        const {fetching, fetchMorePosts, subreddit, posts} = this.props
         if (!fetching) {
-            fetchMorePosts(subreddit)
+            fetchMorePosts(subreddit, posts.length)
         }
     }
 

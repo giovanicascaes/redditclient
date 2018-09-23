@@ -3,5 +3,7 @@ export const AUTH_URL = `https://www.reddit.com/api/v1/authorize.compact?client_
 export const REDIRECT_URI_REGEX = /^about:\/\/callback\/login#access_token=(.+)&token_type=.+&expires_in=(\d+)/
 export const MID_AUTH_URL = 'https://www.reddit.com/api/v1/authorize'
 export const REDDIT_API_URL = 'https://oauth.reddit.com/'
+export const REDDIT_POST_FETCH_DEFAULT_LIMIT = 10
+export const REDDIT_POST_FETCH_LIMIT_PARAM = 'limit'
 
 export const NO_THUMB = 'no_thumb'

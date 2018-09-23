@@ -1,16 +1,19 @@
-import {REDDIT_API_URL} from '../config/apiConstants'
+import {REDDIT_API_URL, REDDIT_POST_FETCH_DEFAULT_LIMIT, REDDIT_POST_FETCH_LIMIT_PARAM} from '../config/apiConstants'
 
-export default (endpoint, token, params) => {
-    let url = REDDIT_API_URL + endpoint
-    if (params) {
-        url += params.reduce((acc, param) => {
-            let newAcc = acc
-            if (newAcc !== '?') {
-                newAcc += '&'
-            }
-            return newAcc + encodeURIComponent(param.name) + '=' + encodeURIComponent(param.value)
-        }, '?')
-    }
+export const after = postName => createParam('after', postName)
+export const limit = limit => createParam(REDDIT_POST_FETCH_LIMIT_PARAM, limit)
+
+const createParam = (name, value) => ({
+    name,
+    value
+})
+
+export const fetchPostsJson = (endpoint, token, ...params) => {
+    const defaultParams = [limit(REDDIT_POST_FETCH_DEFAULT_LIMIT)]
+    const url = REDDIT_API_URL + endpoint + '?'
+        + defaultParams.filter(defParam => params.every(({name}) => name !== defParam.name))
+            .concat(params).reduce((acc, {name, value}) =>
+                acc + '&' + encodeURIComponent(name) + '=' + encodeURIComponent(value), '')
     return fetch(url, {
         headers: {
             'Authorization': `Bearer ${token}`

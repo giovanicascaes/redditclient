@@ -16,15 +16,19 @@ export default (state = initialState, action) => {
                 error: null
             }
         case actionTypes.FETCH_POSTS_SUCCESS:
-            const {subreddit, posts} = payload
+            const {subreddit, posts, more} = payload
+            const newPostList = more ? [
+                ...state.subreddits[subreddit],
+                ...posts
+            ] : [
+                ...posts,
+                ...state.subreddits[subreddit]
+            ]
             return {
                 ...state,
                 subreddits: {
                     ...state.subreddits,
-                    [subreddit]: [
-                        ...state.subreddits[subreddit],
-                        ...posts
-                    ]
+                    [subreddit]: newPostList
                 },
                 fetching: false
             }
